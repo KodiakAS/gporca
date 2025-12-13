@@ -71,6 +71,17 @@ namespace gpos
 				return *this;
 			}
 
+			// copy assignment to avoid deprecated-copy warnings
+			CAutoP<T> const & operator = (const CAutoP<T> &other)
+			{
+				if (this != &other)
+				{
+					m_object = other.m_object;
+				}
+
+				return *this;
+			}
+
 			// deref operator
 			T &operator * ()
 			{
@@ -119,4 +130,3 @@ namespace gpos
 #endif // !GPOS_CAutoP_H
 
 // EOF
-
