@@ -1,7 +1,8 @@
 # Simple helper Makefile for local or CI builds
 
 BUILD_DIR ?= build
-BUILD_TYPE ?= RelWithDebInfo
+# 默认以 Debug 构建以便本地 make test 捕获调试断言/测试
+BUILD_TYPE ?= Debug
 GENERATOR ?= Ninja
 JOBS ?= 8
 CMAKE_ARGS ?=

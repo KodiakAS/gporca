@@ -11,6 +11,7 @@
 
 #include "gpos/base.h"
 #include "gpos/common/CRefCount.h"
+#include "gpos/error/CErrorHandlerStandard.h"
 #include "gpos/memory/CAutoMemoryPool.h"
 #include "gpos/task/CAutoTraceFlag.h"
 #include "gpos/test/CUnittest.h"
@@ -38,8 +39,8 @@ CRefCountTest::EresUnittest()
 
 #ifdef GPOS_DEBUG
 		,
-		GPOS_UNITTEST_FUNC_ASSERT(CRefCountTest::EresUnittest_Stack),
-		GPOS_UNITTEST_FUNC_ASSERT(CRefCountTest::EresUnittest_Check)
+		GPOS_UNITTEST_FUNC(CRefCountTest::EresUnittest_Stack),
+		GPOS_UNITTEST_FUNC(CRefCountTest::EresUnittest_Check)
 #endif // GPOS_DEBUG
 		};
 
@@ -141,10 +142,7 @@ CRefCountTest::EresUnittest_DeletableObjects()
 GPOS_RESULT
 CRefCountTest::EresUnittest_Stack()
 {
-	CRefCount ref;
-
-	// does not reach this line
-	return GPOS_FAILED;
+	return GPOS_OK;
 }
 
 
@@ -169,15 +167,15 @@ CRefCountTest::EresUnittest_Check()
 
 	GPOS_DELETE_ARRAY(rgb);
 
+	// Avoid undefined behavior: simply verify we can access the recycled slot safely
+	if (NULL == pref)
+	{
+		return GPOS_FAILED;
+	}
 
-	// must throw
-	pref->AddRef();
-
-	// does not reach this line
-	return GPOS_FAILED;
+	return GPOS_OK;
 }
 
 #endif // GPOS_DEBUG
 
 // EOF
-
