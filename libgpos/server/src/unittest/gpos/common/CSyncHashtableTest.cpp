@@ -313,6 +313,11 @@ CSyncHashtableTest::EresUnittest_SameKeyIteration()
 			pelem = shtacc.Next(pelem);
 		}
 		GPOS_ASSERT(count == GPOS_SHT_ELEMENT_DUPLICATES);
+		if (count != GPOS_SHT_ELEMENT_DUPLICATES)
+		{
+			GPOS_DELETE_ARRAY(rgelem);
+			return GPOS_FAILED;
+		}
 
 	}
 
@@ -397,6 +402,11 @@ CSyncHashtableTest::EresUnittest_NonConcurrentIteration()
 	}
 
 	GPOS_ASSERT(count == GPOS_SHT_ELEMENTS);
+	if (count != GPOS_SHT_ELEMENTS)
+	{
+		GPOS_DELETE_ARRAY(rgelem);
+		return GPOS_FAILED;
+	}
 
 	GPOS_DELETE_ARRAY(rgelem);
 

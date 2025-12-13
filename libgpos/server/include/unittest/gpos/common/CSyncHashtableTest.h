@@ -160,6 +160,8 @@ namespace gpos
 						m_ulKey = elem.m_ulKey;
 					}
 
+					SElem& operator=(const SElem &) = default;
+
 #ifdef GPOS_DEBUG
 					static
 					BOOL IsValid
@@ -200,4 +202,3 @@ namespace gpos
 #endif // !GPOS_CSyncHashtableTest_H
 
 // EOF
-

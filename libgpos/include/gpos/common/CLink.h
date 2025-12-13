@@ -28,6 +28,8 @@ namespace gpos
 			void *m_next;
 			void *m_prev;
 
+			SLink& operator=(const SLink &) = default;
+
 			// ctor
 			SLink()
 				:
@@ -41,4 +43,3 @@ namespace gpos
 #endif // !GPOS_CLink_H
 
 // EOF
-

@@ -1,9 +1,9 @@
 # Copyright (c) 2015, Pivotal Software, Inc.
 
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(gpopt LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 98)
+set(CMAKE_CXX_STANDARD 11)
 set(GPORCA_VERSION_MAJOR 3)
 set(GPORCA_VERSION_MINOR 88)
 set(GPORCA_VERSION_PATCH 1)

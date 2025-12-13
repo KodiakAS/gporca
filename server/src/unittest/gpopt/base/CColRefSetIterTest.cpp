@@ -111,6 +111,11 @@ CColRefSetIterTest::EresUnittest_Basics()
 
 	GPOS_ASSERT(num_cols == count);
 	GPOS_ASSERT(!((BOOL)crsi));
+	if (num_cols != count || (BOOL)crsi)
+	{
+		pcrs->Release();
+		return GPOS_FAILED;
+	}
 
 	pcrs->Release();
 

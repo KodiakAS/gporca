@@ -20,6 +20,8 @@
 #cmakedefine GPOS_i686 1
 #cmakedefine GPOS_x86_64 1
 #cmakedefine GPOS_sparc 1
+#cmakedefine GPOS_arm64 1
+#cmakedefine GPOS_aarch64 1
 
 // These come from CMAKE_ARCH_BITS (based on CMAKE_SIZEOF_VOID_P)
 #cmakedefine GPOS_32BIT 1

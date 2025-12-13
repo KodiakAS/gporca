@@ -14,6 +14,10 @@
 #include "gpos/string/CWString.h"
 #include "gpos/task/IWorker.h"
 
+#if (GPOS_arm64 || GPOS_aarch64)
+#include <execinfo.h>
+#endif
+
 #define GPOS_STACK_DESCR_TRACE_BUF   (4096)
 
 using namespace gpos;
@@ -154,6 +158,39 @@ CStackDescriptor::BackTrace
 		// move to next frame
 		next_frame = (void**)*next_frame;
 	}
+}
+
+#elif (GPOS_arm64 || GPOS_aarch64)
+
+// Use libc-provided backtrace support on arm64/aarch64 platforms.
+void
+CStackDescriptor::BackTrace
+	(
+	ULONG top_frames_to_skip
+	)
+{
+	Reset();
+
+	void *frames[GPOS_STACK_TRACE_DEPTH + 32];
+	const INT captured = backtrace(frames, GPOS_ARRAY_SIZE(frames));
+	if (captured <= 0)
+	{
+		return;
+	}
+
+	ULONG available = 0;
+	if (captured > static_cast<INT>(top_frames_to_skip))
+	{
+		available = static_cast<ULONG>(captured - top_frames_to_skip);
+	}
+
+	const ULONG frames_to_copy = (available < GPOS_STACK_TRACE_DEPTH) ? available : GPOS_STACK_TRACE_DEPTH;
+	for (ULONG idx = 0; idx < frames_to_copy; ++idx)
+	{
+		m_array_of_addresses[idx] = frames[idx + top_frames_to_skip];
+	}
+
+	m_depth = frames_to_copy;
 }
 
 #else // unsupported platform
@@ -317,4 +354,3 @@ CStackDescriptor::HashValue() const
 }
 
 // EOF
-

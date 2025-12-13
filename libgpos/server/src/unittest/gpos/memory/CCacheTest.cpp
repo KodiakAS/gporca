@@ -478,11 +478,7 @@ CCacheTest::ULFillCacheWithoutEviction(CCache<SSimpleObject*, ULONG*> *pCache, U
 //		Checks if after eviction we have more entries from newer generation than the older generation
 //---------------------------------------------------------------------------
 void
-CCacheTest::CheckGenerationSanityAfterEviction(CCache<SSimpleObject*, ULONG*>* pCache, ULLONG
-#ifdef GPOS_DEBUG
-		ullOneElemSize
-#endif
-		, ULONG ulOldGenBeginKey,
+CCacheTest::CheckGenerationSanityAfterEviction(CCache<SSimpleObject*, ULONG*>* pCache, ULLONG ullOneElemSize, ULONG ulOldGenBeginKey,
 		ULONG ulOldGenEndKey, ULONG ulNewGenEndKey)
 {
 	ULONG uloldGenEntryCount = 0;
@@ -509,14 +505,18 @@ CCacheTest::CheckGenerationSanityAfterEviction(CCache<SSimpleObject*, ULONG*>* p
 		}
 	}
 
-#ifdef GPOS_DEBUG
 	ULLONG ullCacheCapacity = pCache->GetCacheQuota() / ullOneElemSize;
-#endif
 
 	// total in-cache entries must be at least as many as the minimum number of in-cache entries after an eviction
 	GPOS_ASSERT(uloldGenEntryCount + ulNewGenEntryCount >= (ULONG)((double)ullCacheCapacity * (1 - pCache->GetEvictionFactor())));
 	// there should be at least as many new gen entries as the old gen entries as they get to live longer
 	GPOS_ASSERT(ulNewGenEntryCount >= uloldGenEntryCount);
+
+	const ULONG minEntries = (ULONG)((double)ullCacheCapacity * (1 - pCache->GetEvictionFactor()));
+	if (uloldGenEntryCount + ulNewGenEntryCount < minEntries || ulNewGenEntryCount < uloldGenEntryCount)
+	{
+		GPOS_RTL_ASSERT(!"Unexpected cache generation distribution");
+	}
 }
 
 //---------------------------------------------------------------------------
@@ -740,6 +740,10 @@ CCacheTest::EresRemoveDuplicates
 		}
 		GPOS_ASSERT(count == GPOS_CACHE_DUPLICATES_TO_DELETE &&
 				    "Incorrect number of deleted entries");
+		if (count != GPOS_CACHE_DUPLICATES_TO_DELETE)
+		{
+			return GPOS_FAILED;
+		}
 
 	}
 
@@ -896,13 +900,7 @@ CCacheTest::EresUnittest_Iteration()
 
 	CCacheTest::EresInsertDuplicates(pcache);
 
-#ifdef GPOS_DEBUG
-	ULONG ulDuplicates = 1;
-	if (!pcache->AllowsDuplicateKeys())
-	{
-		ulDuplicates = GPOS_CACHE_DUPLICATES;
-	}
-#endif // GPOS_DEBUG
+	ULONG ulDuplicates = pcache->AllowsDuplicateKeys() ? 1 : GPOS_CACHE_DUPLICATES;
 
 	for (ULONG i = 0; i < GPOS_CACHE_ELEMENTS; i++)
 	{
@@ -929,6 +927,10 @@ CCacheTest::EresUnittest_Iteration()
 		}
 		GPOS_ASSERT(count == ulDuplicates &&
 				    "Incorrect number of duplicates");
+		if (count != ulDuplicates)
+		{
+			return GPOS_FAILED;
+		}
 
 	}
 
@@ -967,17 +969,9 @@ CCacheTest::EresUnittest_IterativeDeletion()
 		CCacheTest::EresRemoveDuplicates(pcache);
 	}
 
-#ifdef GPOS_DEBUG
-	ULONG ulDuplicates = 1;
-	ULONG ulDuplicatesToDelete = 0;
-	if (!pcache->AllowsDuplicateKeys())
-	{
-		ulDuplicates = GPOS_CACHE_DUPLICATES;
-		ulDuplicatesToDelete = GPOS_CACHE_DUPLICATES_TO_DELETE;
-	}
-
+	ULONG ulDuplicates = pcache->AllowsDuplicateKeys() ? 1 : GPOS_CACHE_DUPLICATES;
+	ULONG ulDuplicatesToDelete = pcache->AllowsDuplicateKeys() ? 0 : GPOS_CACHE_DUPLICATES_TO_DELETE;
 	ULONG ulRemaining = ulDuplicates - ulDuplicatesToDelete;
-#endif // GPOS_DEBUG
 
 	// count remaining duplicate entries
 	for (ULONG i = 0; i < GPOS_CACHE_ELEMENTS; i++)
@@ -1008,6 +1002,10 @@ CCacheTest::EresUnittest_IterativeDeletion()
 
 		GPOS_ASSERT(count == ulRemaining &&
 				    "Incorrect number of remaining duplicates");
+		if (count != ulRemaining)
+		{
+			return GPOS_FAILED;
+		}
 
 	}
 

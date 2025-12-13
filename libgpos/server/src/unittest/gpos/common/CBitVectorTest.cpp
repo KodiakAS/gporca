@@ -232,6 +232,10 @@ CBitVectorTest::EresUnittest_Random()
 	}
 
 	GPOS_ASSERT(cElements == bv.CountSetBits());
+	if (cElements != bv.CountSetBits())
+	{
+		return GPOS_FAILED;
+	}
 
 	ULONG ulCursor = 0;
 	while(bv.GetNextSetBit(ulCursor + 1, ulCursor))
@@ -241,6 +245,10 @@ CBitVectorTest::EresUnittest_Random()
 	}
 
 	GPOS_ASSERT(0 == cElements);
+	if (0 != cElements)
+	{
+		return GPOS_FAILED;
+	}
 	GPOS_DELETE_ARRAY(rg);
 
 	return GPOS_OK;
@@ -275,4 +283,3 @@ CBitVectorTest::EresUnittest_OutOfBounds()
 #endif // GPOS_DEBUG
 
 // EOF
-

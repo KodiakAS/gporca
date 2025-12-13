@@ -105,6 +105,8 @@ namespace gpos
                 CheckValidity();
             }
 
+			CDouble(const CDouble &) = default;
+
 			// value accessor
 			inline DOUBLE Get() const
 			{
@@ -112,12 +114,7 @@ namespace gpos
 			}
 
 			// assignment
-			inline CDouble& operator=(const CDouble &right)
-            {
-                this->m_d = right.m_d;
-
-                return (*this);
-            }
+			CDouble& operator=(const CDouble &) = default;
 
 			// arithmetic operators
 			friend CDouble operator + (const CDouble &left, const CDouble &right)
@@ -279,4 +276,3 @@ namespace gpos
 #endif // !GPOS_CDouble_H
 
 // EOF
-

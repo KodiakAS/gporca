@@ -80,6 +80,10 @@ CBitSetIterTest::EresUnittest_Basics()
 	GPOS_ASSERT(cInserts == cCount);
 
 	GPOS_ASSERT(!((BOOL)bsi));
+	if (cInserts != cCount || (BOOL)bsi)
+	{
+		return GPOS_FAILED;
+	}
 
 	pbs->Release();
 
@@ -152,4 +156,3 @@ CBitSetIterTest::EresUnittest_Overrun()
 #endif // GPOS_DEBUG
 
 // EOF
-

@@ -85,6 +85,12 @@ CStackTest::EresUnittest_Basic()
 	}
 	
 	GPOS_ASSERT(idx == 9 && "Stack is not empty!");
+
+	if (idx != 9)
+	{
+		GPOS_DELETE(pstk);
+		return GPOS_FAILED;
+	}
 		
 	GPOS_DELETE(pstk);
 	
@@ -192,4 +198,3 @@ CStackTest::EresUnittest_Pop()
 #endif
 
 // EOF
-
