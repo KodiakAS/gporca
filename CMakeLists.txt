@@ -114,6 +114,9 @@ set (GPOS_${GPOS_ARCH_BITS}BIT 1)
 # Library dependencies for optimizer.
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
+# Xerces: optionally download/build bundled GP-Xerces when not present on system.
+option(GPORCA_BUNDLE_XERCES "Download and build GP-Xerces locally when not found on the system." ON)
+
 # POSIX threads.
 find_package(Threads REQUIRED)
 if (NOT CMAKE_USE_PTHREADS_INIT)
@@ -121,7 +124,14 @@ if (NOT CMAKE_USE_PTHREADS_INIT)
 endif()
 
 # Xerces.
-find_package(Xerces REQUIRED)
+find_package(Xerces QUIET)
+if (NOT XERCES_FOUND AND GPORCA_BUNDLE_XERCES)
+  include(BundledXerces)
+  gporca_configure_bundled_xerces()
+endif()
+if (NOT XERCES_FOUND)
+  message(FATAL_ERROR "Xerces not found. Either install GP-Xerces (3.1.2) or enable GPORCA_BUNDLE_XERCES.")
+endif()
 include_directories(${XERCES_INCLUDE_DIRS})
 
 # GPOS.
@@ -155,3 +165,12 @@ add_subdirectory(libgpopt)
 
 # Tests.
 add_subdirectory(server)
+
+# Ensure bundled GP-Xerces is built before consumers link against it.
+if (GPORCA_BUNDLED_XERCES AND TARGET gporca_xerces)
+  foreach(_dep_target gpdbcost naucrates gpopt server_tests gpos_test gporca_test)
+    if (TARGET ${_dep_target})
+      add_dependencies(${_dep_target} gporca_xerces)
+    endif()
+  endforeach()
+endif()

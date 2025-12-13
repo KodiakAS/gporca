@@ -37,12 +37,21 @@ cd gporca
 ## Pre-Requisites
 
 GPORCA uses the following library:
-* GP-Xerces - Greenplum's patched version of Xerces-C 3.1.X
+* GP-Xerces - Greenplum's patched version of Xerces-C 3.1.2
 
 ### Installing GP-Xerces
 
 [GP-XERCES is available here](https://github.com/greenplum-db/gp-xerces). The GP-XERCES README
 gives instructions for building and installing.
+
+This repository also vendors the GP-Xerces 3.1.2 source tarball under
+`third_party/xerces/xerces-c-3.1.2.tar.gz`. By default, if a system Xerces is
+not found, CMake will build this vendored archive (patched with
+`patches/xerces-c-gpdb.patch`). To disable the bundled build, pass
+`-DGPORCA_BUNDLE_XERCES=OFF`. If you want to point to a different local archive,
+use `-DGPORCA_XERCES_ARCHIVE=/path/to/xerces-c-3.1.2.tar.gz`. Online downloads
+are disabled by default; to allow them when the archive is missing, set
+`-DGPORCA_ALLOW_ONLINE_XERCES_DOWNLOAD=ON`.
 
 ## Build and install GPORCA
 
