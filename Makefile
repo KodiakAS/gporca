@@ -10,7 +10,7 @@ TARGET ?=
 
 configure:
 	@mkdir -p "$(BUILD_DIR)"
-	cmake -G "$(GENERATOR)" -S . -B "$(BUILD_DIR)" -DCMAKE_BUILD_TYPE="$(BUILD_TYPE)" $(CMAKE_ARGS)
+	cmake -G "$(GENERATOR)" -S . -B "$(BUILD_DIR)" -DCMAKE_BUILD_TYPE="$(BUILD_TYPE)" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON $(CMAKE_ARGS)
 
 build: configure
 	ninja -C "$(BUILD_DIR)" $(TARGET)

@@ -3,6 +3,8 @@
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(gpopt LANGUAGES CXX C)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Export compile commands (compile_commands.json) for clangd and other tools")
+
 set(CMAKE_CXX_STANDARD 11)
 set(GPORCA_VERSION_MAJOR 3)
 set(GPORCA_VERSION_MINOR 88)
