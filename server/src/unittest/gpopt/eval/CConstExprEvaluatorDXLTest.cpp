@@ -113,9 +113,9 @@ CConstExprEvaluatorDXLTest::EresUnittest_NonScalar()
 {
 	CTestUtils::CTestSetup testsetup;
 	CMemoryPool *mp = testsetup.Pmp();
-	CDummyConstDXLNodeEvaluator consteval(mp, testsetup.Pmda(), m_iDefaultEvalValue);
+	CDummyConstDXLNodeEvaluator const_eval(mp, testsetup.Pmda(), m_iDefaultEvalValue);
 	CConstExprEvaluatorDXL  *pceeval =
-			GPOS_NEW(mp) CConstExprEvaluatorDXL(mp, testsetup.Pmda(), &consteval);
+			GPOS_NEW(mp) CConstExprEvaluatorDXL(mp, testsetup.Pmda(), &const_eval);
 
 	CExpression *pexprGet = CTestUtils::PexprLogicalGet(testsetup.Pmp());
 
@@ -141,9 +141,9 @@ CConstExprEvaluatorDXLTest::EresUnittest_NestedSubquery()
 {
 	CTestUtils::CTestSetup testsetup;
 	CMemoryPool *mp = testsetup.Pmp();
-	CDummyConstDXLNodeEvaluator consteval(mp, testsetup.Pmda(), m_iDefaultEvalValue);
+	CDummyConstDXLNodeEvaluator const_eval(mp, testsetup.Pmda(), m_iDefaultEvalValue);
 	CConstExprEvaluatorDXL  *pceeval =
-			GPOS_NEW(mp) CConstExprEvaluatorDXL(mp, testsetup.Pmda(), &consteval);
+			GPOS_NEW(mp) CConstExprEvaluatorDXL(mp, testsetup.Pmda(), &const_eval);
 
 	CExpression *pexprSelect = CTestUtils::PexprLogicalSelectWithConstAnySubquery(testsetup.Pmp());
 	CExpression *pexprPredicate = (*pexprSelect)[1];
@@ -170,9 +170,9 @@ GPOS_RESULT CConstExprEvaluatorDXLTest::EresUnittest_ScalarContainingVariables()
 {
 	CTestUtils::CTestSetup testsetup;
 	CMemoryPool *mp = testsetup.Pmp();
-	CDummyConstDXLNodeEvaluator consteval(mp, testsetup.Pmda(), m_iDefaultEvalValue);
+	CDummyConstDXLNodeEvaluator const_eval(mp, testsetup.Pmda(), m_iDefaultEvalValue);
 	CConstExprEvaluatorDXL  *pceeval =
-			GPOS_NEW(mp) CConstExprEvaluatorDXL(mp, testsetup.Pmda(), &consteval);
+			GPOS_NEW(mp) CConstExprEvaluatorDXL(mp, testsetup.Pmda(), &const_eval);
 
 	const IMDTypeInt4 *pmdtypeint4 = testsetup.Pmda()->PtMDType<IMDTypeInt4>();
 	CColumnFactory *col_factory = COptCtxt::PoctxtFromTLS()->Pcf();
