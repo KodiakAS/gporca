@@ -67,8 +67,8 @@ CAutoPTest::EresUnittest_Basics()
 	*sz2 = '\0';
 	asz2 = sz2;
 
-	// default assignment
-	asz3 = asz2;
+	// transfer ownership explicitly
+	asz3 = asz2.Reset();
 
 	// accessor
 #ifdef GPOS_DEBUG
@@ -78,9 +78,6 @@ CAutoPTest::EresUnittest_Basics()
 
 	// deref
 	GPOS_ASSERT(*sz2 == *asz3);
-
-	// wipe out asz2 to prevent double free
-	asz2 = NULL;
 
 	// unhooking of object
 	GPOS_DELETE(asz3.Reset());
@@ -102,4 +99,3 @@ CAutoPTest::EresUnittest_Basics()
 }
 
 // EOF
-

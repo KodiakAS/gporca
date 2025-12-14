@@ -67,16 +67,8 @@ namespace gpos
 				return *this;
 			}
 
-			// copy assignment to avoid deprecated-copy warnings
-			CAutoRg<T> const & operator = (const CAutoRg<T> &other)
-			{
-				if (this != &other)
-				{
-					m_object_array = other.m_object_array;
-				}
-
-				return *this;
-			}
+			// copy assignment is disallowed to prevent shared ownership
+			CAutoRg<T> const & operator = (const CAutoRg<T> &) = delete;
 
 			// indexed access
 			inline

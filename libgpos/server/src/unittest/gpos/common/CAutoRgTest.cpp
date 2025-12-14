@@ -64,14 +64,13 @@ CAutoRgTest::EresUnittest_Basics()
 	CHAR *sz2 = GPOS_NEW_ARRAY(mp, CHAR, 1234);
 
 	asz2 = sz2;
-	asz3 = asz2;
+	asz3 = asz2.RgtReset();
 
 #ifdef GPOS_DEBUG
 	CHAR ch = asz3[0];
 	GPOS_ASSERT(ch == sz2[0]);
 #endif // GPOS_DEBUG
 
-	asz2 = NULL;
 	GPOS_DELETE_ARRAY(asz3.RgtReset());
 
 	// ctor
@@ -81,4 +80,3 @@ CAutoRgTest::EresUnittest_Basics()
 }
 
 // EOF
-
