@@ -67,6 +67,9 @@ namespace gpos
 				return *this;
 			}
 
+			// copy assignment is disallowed to prevent shared ownership
+			CAutoRg<T> const & operator = (const CAutoRg<T> &) = delete;
+
 			// indexed access
 			inline
 			T& operator []
@@ -113,4 +116,3 @@ namespace gpos
 #endif // !GPOS_CAutoRg_H
 
 // EOF
-

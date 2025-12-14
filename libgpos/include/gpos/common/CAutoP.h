@@ -71,6 +71,9 @@ namespace gpos
 				return *this;
 			}
 
+			// copy assignment is disallowed to prevent shared ownership
+			CAutoP<T> const & operator = (const CAutoP<T> &) = delete;
+
 			// deref operator
 			T &operator * ()
 			{
@@ -119,4 +122,3 @@ namespace gpos
 #endif // !GPOS_CAutoP_H
 
 // EOF
-
