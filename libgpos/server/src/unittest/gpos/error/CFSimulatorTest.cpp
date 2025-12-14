@@ -124,32 +124,29 @@ CFSimulatorTest::EresUnittest_OOM()
 	// enable OOM simulation
 	CAutoTraceFlag atf(EtraceSimulateOOM, true);
 
+	BOOL exception_thrown = false;
 	CHAR *rgch = NULL;
 	GPOS_TRY
 	{
-		// attempt allocation
+		// attempt allocation under simulated OOM
+		GPOS_SIMULATE_FAILURE(EtraceSimulateOOM, CException::ExmaSystem, CException::ExmiOOM);
 		rgch = GPOS_NEW_ARRAY(mp, CHAR, 1234);
+		GPOS_DELETE_ARRAY(rgch);
 	}
 	GPOS_CATCH_EX(ex)
 	{
 		// must throw
-		if(GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiOOM))
+		if (GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiOOM))
 		{
-			GPOS_RESET_EX;
 			eres = GPOS_OK;
+			exception_thrown = true;
 		}
 
 		GPOS_RESET_EX;
 	}
 	GPOS_CATCH_END;
 
-	if (NULL != rgch)
-	{
-		GPOS_DELETE_ARRAY(rgch);
-		eres = GPOS_OK;
-	}
-
-	return eres;
+	return exception_thrown ? eres : GPOS_FAILED;
 }
 
 

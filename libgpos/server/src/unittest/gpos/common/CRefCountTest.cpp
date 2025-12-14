@@ -11,10 +11,12 @@
 
 #include "gpos/base.h"
 #include "gpos/common/CRefCount.h"
-#include "gpos/error/CErrorHandlerStandard.h"
+#include "gpos/common/clibwrapper.h"
 #include "gpos/memory/CAutoMemoryPool.h"
 #include "gpos/task/CAutoTraceFlag.h"
 #include "gpos/test/CUnittest.h"
+
+#include <new>
 
 #include "unittest/gpos/common/CRefCountTest.h"
 
@@ -142,7 +144,35 @@ CRefCountTest::EresUnittest_DeletableObjects()
 GPOS_RESULT
 CRefCountTest::EresUnittest_Stack()
 {
-	return GPOS_OK;
+	alignas(CRefCount) BYTE rgRef[sizeof(CRefCount)];
+	CRefCount *pref = new (rgRef) CRefCount();
+	BOOL assert_thrown = false;
+
+	GPOS_TRY
+	{
+		// destructor guard must assert for non-zero ref count on stack
+		GPOS_ASSERT(NULL == ITask::Self() ||
+					ITask::Self()->HasPendingExceptions() ||
+					0 == pref->RefCount());
+	}
+	GPOS_CATCH_EX(ex)
+	{
+		if (GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiAssert))
+		{
+			assert_thrown = true;
+			GPOS_RESET_EX;
+		}
+		else
+		{
+			GPOS_RETHROW(ex);
+		}
+	}
+	GPOS_CATCH_END;
+
+	// reset refcount to make the stack object benign after the assertion
+	*reinterpret_cast<ULONG_PTR*>(pref) = 0;
+
+	return assert_thrown ? GPOS_OK : GPOS_FAILED;
 }
 
 
@@ -158,22 +188,31 @@ CRefCountTest::EresUnittest_Stack()
 GPOS_RESULT
 CRefCountTest::EresUnittest_Check()
 {
-	// create memory pool
-	CAutoMemoryPool amp;
-	CMemoryPool *mp = amp.Pmp();
+	alignas(CRefCount) BYTE rgRef[sizeof(CRefCount)];
+	CRefCount *pref = new (rgRef) CRefCount();
+	clib::Memset(rgRef, GPOS_MEM_FREED_PATTERN_CHAR, sizeof(rgRef));
 
-	BYTE *rgb = GPOS_NEW_ARRAY(mp, BYTE, 128);
-	CRefCount *pref = (CRefCount*)rgb;
+	BOOL assert_thrown = false;
 
-	GPOS_DELETE_ARRAY(rgb);
-
-	// Avoid undefined behavior: simply verify we can access the recycled slot safely
-	if (NULL == pref)
+	GPOS_TRY
 	{
-		return GPOS_FAILED;
+		pref->AddRef();
 	}
+	GPOS_CATCH_EX(ex)
+	{
+		if (GPOS_MATCH_EX(ex, CException::ExmaSystem, CException::ExmiAssert))
+		{
+			assert_thrown = true;
+			GPOS_RESET_EX;
+		}
+		else
+		{
+			GPOS_RETHROW(ex);
+		}
+	}
+	GPOS_CATCH_END;
 
-	return GPOS_OK;
+	return assert_thrown ? GPOS_OK : GPOS_FAILED;
 }
 
 #endif // GPOS_DEBUG
